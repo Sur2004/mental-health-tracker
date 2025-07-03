@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Your Mental Fitness Tips</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+<style>
+  body {
+    background: linear-gradient(135deg, #d7e3c4 0%, #f5f1e9 60%, #c9d6b9 100%);
+    color: #40522e;
+    font-family: "Georgia", serif;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: url('https://www.svgrepo.com/show/30354/mandala.svg');
+    background-repeat: repeat;
+    background-size: 150px 150px;
+    opacity: 0.05;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 800px;
+    position: relative;
+    z-index: 1;
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+  }
+
+  h1 {
+    color: #37532f;
+    font-weight: 700;
+    font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+    letter-spacing: 1.5px;
+    margin-bottom: 2.5rem;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    text-align: center;
+  }
+
+  .tip-card {
+    background: rgba(196, 210, 169, 0.85);
+    border-radius: 18px;
+    padding: 2rem 2.5rem;
+    box-shadow: 0 8px 18px rgba(55, 83, 46, 0.3);
+    font-size: 1.25rem;
+    min-height: 180px;
+    white-space: pre-line;
+    line-height: 1.8;
+    color: #33421e;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    user-select: none;
+  }
+
+  #linksCarousel {
+    background: rgba(220, 233, 193, 0.9);
+    border-radius: 18px;
+    padding: 1.5rem 2rem;
+    box-shadow: 0 6px 16px rgba(55, 83, 46, 0.25);
+    margin-top: 3rem;
+  }
+
+  .carousel-item a {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #40522e;
+    text-decoration: none;
+    transition: color 0.4s ease;
+  }
+
+  .carousel-item a:hover {
+    color: #2c3a12;
+    text-decoration: underline;
+  }
+
+  .carousel-control-prev-icon,
+  .carousel-control-next-icon {
+    filter: invert(35%) sepia(80%) saturate(550%) hue-rotate(75deg) brightness(90%) contrast(90%);
+  }
+
+  .btn-outline-success {
+    font-weight: 600;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    font-size: 1.1rem;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    display: inline-block;
+    margin-top: 2.5rem;
+  }
+
+  .btn-outline-success:hover {
+    background-color: #40522e;
+    color: #e6f0d4;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Your Mental Fitness Tips</h1>
+
+  <div class="tip-card mb-5" id="tips-container" aria-live="polite" aria-atomic="true" aria-relevant="text">
+    <!-- Typed suggestions will appear here -->
+  </div>
+
+  <div id="linksCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="4000" data-bs-pause="hover" aria-label="Helpful resources carousel">
+    <div class="carousel-inner text-center py-3">
+      {% for link in helpful_links %}
+        <div class="carousel-item {% if loop.first %}active{% endif %}">
+          <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer" tabindex="0">{{ link.title }}</a>
+        </div>
+      {% endfor %}
+    </div>
+
+    <button class="carousel-control-prev" type="button" data-bs-target="#linksCarousel" data-bs-slide="prev" aria-label="Previous resource">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#linksCarousel" data-bs-slide="next" aria-label="Next resource">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    </button>
+  </div>
+
+  <a href="{{ url_for('home') }}" class="btn btn-outline-success" role="button" aria-label="Back to Quiz">Back to Quiz</a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+const tips = {{ suggestions|tojson }};
+const container = document.getElementById('tips-container');
+
+let tipIndex = 0;
+let charIndex = 0;
+let displayedText = '';
+
+function typeNextChar() {
+  if (tipIndex >= tips.length || tipIndex >= 5) return;
+
+  const tip = "• " + tips[tipIndex];
+  if (charIndex < tip.length) {
+    displayedText += tip.charAt(charIndex);
+    container.textContent = displayedText;
+    charIndex++;
+    setTimeout(typeNextChar, 35);
+  } else {
+    displayedText += '\n\n';
+    tipIndex++;
+    charIndex = 0;
+    setTimeout(typeNextChar, 500);
+  }
+}
+
+if (tips.length === 0) {
+  container.textContent = "No tips available for your answers.";
+} else {
+  typeNextChar();
+}
+</script>
+
+</body>
+</html>
